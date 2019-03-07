@@ -1,4 +1,13 @@
-import Vector, random, SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+from Vector import Vector
+
+import random
+
+try:
+    import simplegui
+except ImportError:
+    import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+
+
 WIDTH = 1000
 HEIGHT = 500
 
@@ -11,7 +20,7 @@ class Floor:
             self.pos = Vector((0, HEIGHT - 15))
             self.length = WIDTH * 1.25
         else:
-            self.pos = Vector(WIDTH + random.randrange(50, 200), HEIGHT - 15)
+            self.pos = Vector((WIDTH + random.randrange(50, 200), HEIGHT - 15))
             self.length = random.randrange(100, 500)
 
     def expireCheck(self):
@@ -28,12 +37,12 @@ class Floor:
 
     def draw(self, canvas):
         x1 = self.pos
-        x2 = self.pos + Vector(0, 30)
-        x3 = self.pos + Vector(self.length, 30)
-        x4 = self.pos + Vector(self.length, 0)
+        x2 = self.pos + Vector((0, 30))
+        x3 = self.pos + Vector((self.length, 30))
+        x4 = self.pos + Vector((self.length, 0))
         canvas.draw_polygon([x1.getP(), x2.getP(), x3.getP(), x4.getP()], 12, 'Green', 'Green')
 
-        self.pos.subtract(Vector(3, 0))
+        self.pos.subtract(Vector((3, 0)))
 
 
 class Ground:

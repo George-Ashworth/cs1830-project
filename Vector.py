@@ -5,9 +5,9 @@ import math
 class Vector:
 
     # Initialiser
-    def __init__(self, p=(0, 0)):
-        self.x = p[0]
-        self.y = p[1]
+    def __init__(self, x=0, y=0):
+        self.x = x
+        self.y = y
 
     # Returns a string representation of the vector
     def __str__(self):
@@ -28,10 +28,7 @@ class Vector:
 
     # Returns a copy of the vector
     def copy(self):
-        v = Vector()
-        v.x = self.x
-        v.y = self.y
-        return v
+        return Vector(self.x, self.y)
 
     # Adds another vector to this vector
     def add(self, other):
@@ -46,8 +43,6 @@ class Vector:
     def negate(self):
         return self.multiply(-1)
 
-        # Magic method for - (one operand)
-
     def __neg__(self):
         return self.copy().negate()
 
@@ -55,13 +50,8 @@ class Vector:
     def subtract(self, other):
         return self.add(-other)
 
-    # Magic method for - (two operands)
     def __sub__(self, other):
         return self.copy().subtract(other)
-
-    # Returns the dot product of this vector with another one
-    def dot(self, other):
-        return self.x * other.x + self.y * other.y
 
     # Multiplies the vector by a scalar
     def multiply(self, k):
@@ -69,16 +59,9 @@ class Vector:
         self.y *= k
         return self
 
-    # Magic method for *
-    # If the arguments are two vectors, it returns the dot product
-    # Otherwise, returns the product by a scalar
-    def __mul__(self, x):
-        try:
-            return self.dot(x)
-        except:
-            return self.copy().multiply(x)
+    def __mul__(self, k):
+        return self.copy().multiply(k)
 
-    # Magic method for * when the lefthand side is not a vector
     def __rmul__(self, k):
         return self.copy().multiply(k)
 
@@ -86,7 +69,6 @@ class Vector:
     def divide(self, k):
         return self.multiply(1 / k)
 
-    # Magic method for /
     def __truediv__(self, k):
         return self.copy().divide(k)
 
@@ -97,6 +79,10 @@ class Vector:
     # Returns a normalized version of the vector
     def getNormalized(self):
         return self.copy().normalize()
+
+    # Returns the dot product of this vector with another one
+    def dot(self, other):
+        return self.x * other.x + self.y * other.y
 
     # Returns the length of the vector
     def length(self):
@@ -114,7 +100,22 @@ class Vector:
         return self
 
     # Returns the angle between this vector and another one
-    # You will need to use the arccosine function:
-    # acos in the math library
     def angle(self, other):
-        pass
+        return math.acos(self.dot(other) / (self.length() * other.length()))
+
+    # Rotates the vector 90 degrees anticlockwise
+    def rotateAnti(self):
+        self.x, self.y = -self.y, self.x
+        return self
+
+    # Rotates the vector according to an angle theta given in radians
+    def rotateRad(self, theta):
+        rx = self.x * math.cos(theta) - self.y * math.sin(theta)
+        ry = self.x * math.sin(theta) + self.y * math.cos(theta)
+        self.x, self.y = rx, ry
+        return self
+
+    # Rotates the vector according to an angle theta given in degrees
+    def rotate(self, theta):
+        thetaRad = theta / 180 * math.pi
+        return self.rotateRad(thetaRad)

@@ -1,10 +1,3 @@
-# CodeSkulptor runs Python programs in your browser.
-# Click the upper left button to run this simple demo.
-
-# CodeSkulptor is tested to run in recent versions of
-# Chrome, Firefox, and Safari.
-
-
 # things to do:
 # draw the player
 # add space bar event for jumping
@@ -87,8 +80,8 @@ class Floor:
 
     def interaction(self, player):
 
-        if (player.pos.x == self.pos.x - 5):
-            if (player.pos.y + player.height / 2 > self.pos.y):
+        if player.pos.x == self.pos.x - 5:
+            if player.pos.y + player.height / 2 > self.pos.y:
                 # run along the platform
                 player.pos.y = self.pos.y + self.height + player.height / 2
             else:
@@ -96,9 +89,9 @@ class Floor:
         else:
             print("shouldnt ever get here, you havent initialised the player yet")
 
-        if (player.pos.x >= self.pos.x and player.pos.x <= self.pos.x + self.length):
-            if (player.pos.y + player.height / 2 > self.pos.y + self.height):
-                if (player.vel < 0):
+        if self.pos.x <= player.pos.x <= self.pos.x + self.length:
+            if player.pos.y + player.height / 2 > self.pos.y + self.height:
+                if player.vel < 0:
                     player.vel = 0
                     player.pos.y = self.pos.y + self.height + player.height / 2
 
@@ -112,7 +105,7 @@ class SideScroller:
     def draw(self, canvas):
         maximum = len(self.floors)
         i = 0
-        while (i < maximum):
+        while i < maximum:
             # print(str(i+1) + " of " + str(maximum))
 
             if (i == 0) & (self.floors[i].expireCheck()):

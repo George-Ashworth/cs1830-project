@@ -76,7 +76,7 @@ class Floor:
         canvas.draw_polygon([x1.getP(), x2.getP(), x3.getP(), x4.getP()], 12, 'Green', 'Green')
 
         global speed
-        self.pos.subtract(Vector(speed, 0.1))
+        self.pos.subtract(Vector(speed, 0))
 
     def interaction(self, player):
 

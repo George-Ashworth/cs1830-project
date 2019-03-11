@@ -23,8 +23,8 @@ class Vector:
 
         # Returns a tuple with the point corresponding to the vector
 
-    def getP(self):
-        return (self.x, self.y)
+    def get_p(self):
+        return self.x, self.y
 
     # Returns a copy of the vector
     def copy(self):
@@ -77,7 +77,7 @@ class Vector:
         return self.divide(self.length())
 
     # Returns a normalized version of the vector
-    def getNormalized(self):
+    def get_normalized(self):
         return self.copy().normalize()
 
     # Returns the dot product of this vector with another one
@@ -89,7 +89,7 @@ class Vector:
         return math.sqrt(self.x ** 2 + self.y ** 2)
 
     # Returns the squared length of the vector
-    def lengthSquared(self):
+    def length_squared(self):
         return self.x ** 2 + self.y ** 2
 
     # Reflect this vector on a normal
@@ -104,12 +104,12 @@ class Vector:
         return math.acos(self.dot(other) / (self.length() * other.length()))
 
     # Rotates the vector 90 degrees anticlockwise
-    def rotateAnti(self):
+    def rotate_anti(self):
         self.x, self.y = -self.y, self.x
         return self
 
     # Rotates the vector according to an angle theta given in radians
-    def rotateRad(self, theta):
+    def rotate_rad(self, theta):
         rx = self.x * math.cos(theta) - self.y * math.sin(theta)
         ry = self.x * math.sin(theta) + self.y * math.cos(theta)
         self.x, self.y = rx, ry
@@ -117,5 +117,5 @@ class Vector:
 
     # Rotates the vector according to an angle theta given in degrees
     def rotate(self, theta):
-        thetaRad = theta / 180 * math.pi
-        return self.rotateRad(thetaRad)
+        theta_rad = theta / 180 * math.pi
+        return self.rotate_rad(theta_rad)

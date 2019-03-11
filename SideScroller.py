@@ -26,18 +26,18 @@ class Player:
 
 
 class Obstacle:
-    def __init__(self, obType, parentLength):
-        self.obType = obType
+    def __init__(self, ob_type, parent_length):
+        self.obType = ob_type
         self.height = 20
         self.width = 20
-        self.pos = Vector(random.randrange(self.width, parentLength - self.width), -self.height / 2)
+        self.pos = Vector(random.randrange(self.width, parent_length - self.width), -self.height / 2)
 
     def draw(self, canvas, pos):
         x1 = self.pos + pos
         x2 = x1 + Vector(0, -self.height)
         x3 = x1 + Vector(self.width, -self.height)
         x4 = x1 + Vector(self.width, 0)
-        canvas.draw_polygon([x1.getP(), x2.getP(), x3.getP(), x4.getP()], 12, 'Blue', 'Blue')
+        canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Blue', 'Blue')
 
 
 class Floor:
@@ -53,13 +53,13 @@ class Floor:
             for i in range(0, random.randint(0, self.length // 100)):
                 self.obstacles.append(Obstacle(1, self.length))
 
-    def expireCheck(self):
+    def expire_check(self):
         if self.pos.x + self.length <= 0:
             return True
         else:
             return False
 
-    def createCheck(self):
+    def create_check(self):
         if self.pos.x + self.length <= WIDTH:
             return True
         else:
@@ -73,7 +73,7 @@ class Floor:
         x2 = self.pos + Vector(0, self.height)
         x3 = self.pos + Vector(self.length, self.height)
         x4 = self.pos + Vector(self.length, 0)
-        canvas.draw_polygon([x1.getP(), x2.getP(), x3.getP(), x4.getP()], 12, 'Green', 'Green')
+        canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Green', 'Green')
 
         global speed
         self.pos.subtract(Vector(speed, 0))
@@ -108,11 +108,11 @@ class SideScroller:
         while i < maximum:
             # print(str(i+1) + " of " + str(maximum))
 
-            if (i == 0) & (self.floors[i].expireCheck()):
+            if (i == 0) & (self.floors[i].expire_check()):
                 self.floors.pop(0)
                 i = i - 1
             else:
-                if (i == maximum - 1) & (self.floors[i].createCheck()):
+                if (i == maximum - 1) & (self.floors[i].create_check()):
                     self.floors.append(Floor())
 
                 self.floors[i].draw(canvas)

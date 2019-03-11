@@ -27,10 +27,10 @@ class Player:
 
 class Obstacle:
     def __init__(self, ob_type, parent_length):
-        self.obType = ob_type
+        self.ob_ype = ob_type
         self.height = 20
         self.width = 20
-        self.pos = Vector(random.randrange(self.width, parent_length - self.width), -self.height / 2)
+        self.pos = Vector(random.randrange(self.width, parent_length - self.width), 0)
 
     def draw(self, canvas, pos):
         x1 = self.pos + pos

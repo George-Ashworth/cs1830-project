@@ -14,8 +14,9 @@ except ImportError:
 WIDTH = 960
 HEIGHT = 540
 
-speed = 3
+SPEED = 3
 GRAVITY = 0.025
+
 
 
 class Player:
@@ -28,40 +29,28 @@ class Player:
         self.gravity = Vector(0, 9.8)
 
     def draw(self, canvas):
-
-        p1 = self.pos    #bottom left
-        p2 = self.pos + Vector(0, -self.height)  #topleft
-        p3 = self.pos + Vector(self.width, 0)  #bottom right
-        p4 = self.pos + Vector(self.width, -self.height) #top right
+        p1 = self.pos  # bottom left
+        p2 = self.pos + Vector(0, -self.height)  # topleft
+        p3 = self.pos + Vector(self.width, 0)  # bottom right
+        p4 = self.pos + Vector(self.width, -self.height)  # top right
 
         canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
 
-
-
-
-    def movePlayer(self):
-
+    def movePlayer(self, yVal):
         global GRAVITY
-        self.vel = self.vel + Vector(0, GRAVITY)
+        self.vel = self.vel + Vector(0, yVal)
         self.pos.add(self.vel)
-
-
 
 
 class KeyHandler:
 
     def __init__(self):
-        self.space_down = False
-        frame.set_keydown_handler(self.key_down)
-        frame.set_keyup_handler(self.key_up)
+        self.space = False
 
     def key_down(self, key):
         if key == simplegui.KEY_MAP['space']:
-            self.space_down = True
+            self.space = True
 
-    def key_up(self, key):
-        if key == simplegui.KEY_MAP['space']:
-            self.space_down = True
 
 
 class Obstacle:
@@ -78,7 +67,6 @@ class Obstacle:
         x3 = x1 + Vector(self.width, -self.height)
         x4 = x1 + Vector(self.width, 0)
         canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Blue', 'Blue')
-
 
 
 class Floor:
@@ -116,9 +104,8 @@ class Floor:
         x4 = self.pos + Vector(self.length, 0)
         canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Green', 'Green')
 
-        global speed
-        self.pos.subtract(Vector(speed, 0))
-
+        global SPEED
+        self.pos.subtract(Vector(SPEED, 0))
 
 
 class Interaction:
@@ -129,25 +116,17 @@ class Interaction:
         self.other = other
         self.inCollision = False
 
-
     def update(self):
-
         if (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length):
             if self.player.pos.y >= self.other.pos.y - 1:
                 self.player.pos.y = self.other.pos.y - 1
+                self.inCollision = True
                 self.player.vel = Vector()
 
+        return self.inCollision
 
 
-
-
-            
-
-
-
-
-
-
+kbd = KeyHandler()
 
 
 class SideScroller:
@@ -157,14 +136,18 @@ class SideScroller:
         self.floors.append(Floor(True))
         self.p = Player()
 
-
     def draw(self, canvas):
         maximum = len(self.floors)
         i = 0
         inter = Interaction(self.p, self.floors[i])
-        while i < maximum:
-            # print(str(i+1) + " of " + str(maximum))
 
+        if inter.update(): #if its colli
+            if kbd == kbd.space:
+                print("space down")
+                self.p.movePlayer(-3)
+
+
+        while i < maximum:
             if (i == 0) & (self.floors[i].expire_check()):
                 self.floors.pop(0)
                 i = i - 1
@@ -175,7 +158,7 @@ class SideScroller:
                 self.floors[i].draw(canvas)
                 self.p.draw(canvas)
                 inter.update()
-                self.p.movePlayer()
+                self.p.movePlayer(GRAVITY)
 
             maximum = len(self.floors)
             i = i + 1
@@ -186,15 +169,16 @@ ss = SideScroller()
 
 # Handler to draw on canvas
 def draw(canvas):
-    global speed
+    global SPEED
     ss.draw(canvas)
-    speed += 0.0008
-    # print(speed)
+    SPEED += 0.0008
+    # print(SPEED)
 
 
 # Create a frame and assign callbacks to event handlers
 frame = simplegui.create_frame("Home", WIDTH, HEIGHT)
 frame.set_draw_handler(draw)
+frame.set_keydown_handler(kbd.key_down)
 
 # Start the frame animation
 frame.start()

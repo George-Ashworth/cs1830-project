@@ -21,13 +21,35 @@ class Player:
 
     def __init__(self):
         self.pos = Vector(50, HEIGHT / 2)
-        self.vel = 0
+        self.vel = Vector()
         self.height = 100
+        self.width = 75
+        self.gravity = Vector(0, 9.8)
+
+    def draw(self, canvas):
+
+        p1 = self.pos    #bottom left
+        p2 = self.pos + Vector(0, -self.height)  #topleft
+        p3 = self.pos + Vector(self.width, 0)  #bottom right
+        p4 = self.pos + Vector(self.width, -self.height) #top right
+
+        canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
+
+
+
+
+    def movePlayer(self):
+
+        acceleration = 0.025
+        self.vel = self.vel + Vector(0, acceleration)
+        self.pos.add(self.vel)
+
 
 
 class Obstacle:
+
     def __init__(self, ob_type, parent_length):
-        self.ob_ype = ob_type
+        self.ob_type = ob_type
         self.height = 20
         self.width = 20
         self.pos = Vector(random.randrange(self.width, parent_length - self.width), 0)
@@ -38,6 +60,7 @@ class Obstacle:
         x3 = x1 + Vector(self.width, -self.height)
         x4 = x1 + Vector(self.width, 0)
         canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Blue', 'Blue')
+
 
 
 class Floor:
@@ -78,22 +101,11 @@ class Floor:
         global speed
         self.pos.subtract(Vector(speed, 0))
 
-    def interaction(self, player):
+    def interaction(self, player,obstacle):
 
-        if player.pos.x == self.pos.x - 5:
-            if player.pos.y + player.height / 2 > self.pos.y:
-                # run along the platform
-                player.pos.y = self.pos.y + self.height + player.height / 2
-            else:
-                print("falls off")
-        else:
-            print("shouldnt ever get here, you havent initialised the player yet")
+        if (player.pos.y < obstacle.pos.y):
+            player.pos.y =
 
-        if self.pos.x <= player.pos.x <= self.pos.x + self.length:
-            if player.pos.y + player.height / 2 > self.pos.y + self.height:
-                if player.vel < 0:
-                    player.vel = 0
-                    player.pos.y = self.pos.y + self.height + player.height / 2
 
 
 class SideScroller:
@@ -101,6 +113,7 @@ class SideScroller:
         self.floors = []
         self.floors.append(Floor(True))
         self.p = Player()
+
 
     def draw(self, canvas):
         maximum = len(self.floors)
@@ -116,8 +129,9 @@ class SideScroller:
                     self.floors.append(Floor())
 
                 self.floors[i].draw(canvas)
+                self.p.draw(canvas)
                 self.floors[i].interaction(self.p)
-                # self.p.draw(canvas)
+                self.p.movePlayer()
 
             maximum = len(self.floors)
             i = i + 1

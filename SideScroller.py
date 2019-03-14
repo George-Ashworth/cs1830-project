@@ -141,10 +141,11 @@ class SideScroller:
         i = 0
         inter = Interaction(self.p, self.floors[i])
 
-        if inter.update(): #if its colli
-            if kbd == kbd.space:
-                print("space down")
+        if inter.update(): #if its colliding
+            if kbd.space:
                 self.p.movePlayer(-3)
+                print("colliding")
+                kbd.space = False
 
 
         while i < maximum:

@@ -15,6 +15,7 @@ WIDTH = 960
 HEIGHT = 540
 
 speed = 3
+GRAVITY = 0.025
 
 
 class Player:
@@ -40,9 +41,10 @@ class Player:
 
     def movePlayer(self):
 
-        acceleration = 0.025
-        self.vel = self.vel + Vector(0, acceleration)
+        global GRAVITY
+        self.vel = self.vel + Vector(0, GRAVITY)
         self.pos.add(self.vel)
+
 
 
 
@@ -117,14 +119,39 @@ class Floor:
         global speed
         self.pos.subtract(Vector(speed, 0))
 
-    def interaction(self, player,obstacle):
 
-        if (player.pos.y < obstacle.pos.y):
-            player.pos.y =
+
+class Interaction:
+
+    def __init__(self, player, other):
+
+        self.player = player
+        self.other = other
+        self.inCollision = False
+
+
+    def update(self):
+
+        if (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length):
+            if self.player.pos.y >= self.other.pos.y - 1:
+                self.player.pos.y = self.other.pos.y - 1
+                self.player.vel = Vector()
+
+
+
+
+
+            
+
+
+
+
+
 
 
 
 class SideScroller:
+
     def __init__(self):
         self.floors = []
         self.floors.append(Floor(True))
@@ -134,6 +161,7 @@ class SideScroller:
     def draw(self, canvas):
         maximum = len(self.floors)
         i = 0
+        inter = Interaction(self.p, self.floors[i])
         while i < maximum:
             # print(str(i+1) + " of " + str(maximum))
 
@@ -146,7 +174,7 @@ class SideScroller:
 
                 self.floors[i].draw(canvas)
                 self.p.draw(canvas)
-                self.floors[i].interaction(self.p)
+                inter.update()
                 self.p.movePlayer()
 
             maximum = len(self.floors)

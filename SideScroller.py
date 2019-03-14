@@ -25,6 +25,22 @@ class Player:
         self.height = 100
 
 
+class KeyHandler:
+
+    def __init__(self):
+        self.space_down = False
+        frame.set_keydown_handler(self.key_down)
+        frame.set_keyup_handler(self.key_up)
+
+    def key_down(self, key):
+        if key == simplegui.KEY_MAP['space']:
+            self.space_down = True
+
+    def key_up(self, key):
+        if key == simplegui.KEY_MAP['space']:
+            self.space_down = True
+
+
 class Obstacle:
     def __init__(self, ob_type, parent_length):
         self.ob_ype = ob_type

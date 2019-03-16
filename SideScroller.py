@@ -117,7 +117,13 @@ class Interaction:
         self.inCollision = False
 
     def update(self):
-        if (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length):
+        if (self.player.pos.x < self.other.pos.x) or (self.player.pos.x > self.other.pos.x + self.other.length):
+            if self.player.pos.y - self.player.height > self.other.pos.y:
+                self.inCollision = False
+                print ("game over")
+                frame.stop()
+
+        elif (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length):
             if self.player.pos.y >= self.other.pos.y - 1:
                 self.player.pos.y = self.other.pos.y - 1
                 self.inCollision = True

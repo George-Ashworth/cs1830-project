@@ -117,19 +117,32 @@ class Interaction:
         self.inCollision = False
 
     def update(self):
-        if (self.player.pos.x < self.other.pos.x) or (self.player.pos.x > self.other.pos.x + self.other.length):
-            if self.player.pos.y - self.player.height > self.other.pos.y:
-                self.inCollision = False
-                print ("game over")
-                frame.stop()
-
-        elif (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length):
+        if self.on_platform_x():
             if self.player.pos.y >= self.other.pos.y - 1:
-                self.player.pos.y = self.other.pos.y - 1
+                self.no_clipping()
                 self.inCollision = True
                 self.player.vel = Vector()
 
+        elif self.off_platform_x():
+            if self.falling():
+                self.inCollision = False
+                print("game over")
+                frame.stop()
+
         return self.inCollision
+
+    def no_clipping(self):
+        self.player.pos.y = self.other.pos.y - 1
+
+    def off_platform_x(self):
+        return (self.player.pos.x < self.other.pos.x) or self.player.pos.x > self.other.pos.x + self.other.length
+
+    def on_platform_x(self):
+        return (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length)
+
+    def falling(self):
+        return self.player.pos.y - self.player.height > self.other.pos.y
+
 
 
 kbd = KeyHandler()
@@ -149,8 +162,7 @@ class SideScroller:
 
         if inter.update(): #if its colliding
             if kbd.space:
-                self.p.movePlayer(-3)
-                print("colliding")
+                self.p.movePlayer(-2)
                 kbd.space = False
 
 

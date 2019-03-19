@@ -8,14 +8,14 @@
 # bouncing off left wall when falling
 
 
-
-from Vector import Vector
 import random
 
 try:
     import simplegui
+    from user303_wxSmFEVIaV_0 import Vector
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+    from Vector import Vector
 
 WIDTH = 960
 HEIGHT = 540

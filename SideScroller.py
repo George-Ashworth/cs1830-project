@@ -23,7 +23,7 @@ WIDTH = 960
 HEIGHT = 540
 
 SPEED = 3
-GRAVITY = 0.020
+GRAVITY = 0.080
 
 
 class Chaser:
@@ -61,7 +61,6 @@ class Player:
         self.gravity = Vector(0, 9.8)
         self.inObsCollision = False
 
-
     def draw(self, canvas):  # draw the player
         p1 = self.pos  # bottom left
         p2 = self.pos + Vector(0, -self.height)  # topleft
@@ -69,17 +68,14 @@ class Player:
         p4 = self.pos + Vector(self.width, -self.height)  # top right
         canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
 
-
     def draw_score(self, canvas):
         global WIDTH
         canvas.draw_text(str(self.score), (WIDTH - 100, 20), 12, 'White')
-
 
     def movePlayer(self, yVal):  # this moves the player in the y direction
         global GRAVITY
         self.vel = self.vel + Vector(0, yVal)
         self.pos.add(self.vel)
-
 
     def increment_score(self, speed):
         self.score += speed * 1.5
@@ -246,6 +242,13 @@ class SideScroller:
         inter_chaser = ChaserInteraction(self.p, self.c)
         inter_chaser.update()
 
+        self.c.move_chaser(5)
+        self.p.movePlayer(GRAVITY)
+        self.p.increment_score(SPEED)
+        self.p.draw_score(canvas)
+
+        self.p.draw(canvas)
+
         while i < max_floor:
             if (i == 0) & (self.floors[i].expire_check()):
                 self.floors.pop(0)
@@ -256,7 +259,7 @@ class SideScroller:
 
             if inter_floor.update():  # if its colliding
                 if kbd.space:
-                    self.p.movePlayer(-2.5)
+                    self.p.movePlayer(-5)
                     kbd.space = False
 
             for o in self.floors[i].obstacles:
@@ -265,12 +268,7 @@ class SideScroller:
                 inter_obs.update()
 
             inter_floor.update()
-            self.c.move_chaser(5)
-            self.p.movePlayer(GRAVITY)
-            self.p.increment_score(SPEED)
-            self.p.draw_score(canvas)
 
-            self.p.draw(canvas)
             self.floors[i].draw(canvas)
 
             max_floor = len(self.floors)

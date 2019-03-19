@@ -112,7 +112,7 @@ class Obstacle:
 
 class Floor:
     def __init__(self, start=False):
-        self.img = simplegui.load_image("http://osmond.uk.to/ground.png")
+        self.img = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
         self.height = random.randrange(30, 70)
         self.obstacles = []
         self.start = start

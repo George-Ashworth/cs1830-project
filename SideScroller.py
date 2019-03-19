@@ -213,6 +213,17 @@ class FloorInteraction:
         return self.player.pos.x + self.player.width == self.other.pos.x
 
 
+class ChaserInteraction:
+    def __init__(self, player, other):
+        self.player = player
+        self.other = other
+
+    def update(self):
+        if self.player.pos.x <= self.other.width:
+            print("game over")
+            frame.stop()
+
+
 kbd = KeyHandler()
 
 
@@ -224,7 +235,6 @@ class SideScroller:
         self.p = Player()
         self.c = Chaser()
 
-
     def draw(self, canvas):
         global SPEED
         max_floor = len(self.floors)
@@ -232,6 +242,9 @@ class SideScroller:
         j = 0
         self.c.draw(canvas)
         inter_floor = FloorInteraction(self.p, self.floors[i])
+
+        inter_chaser = ChaserInteraction(self.p, self.c)
+        inter_chaser.update()
 
         while i < max_floor:
             if (i == 0) & (self.floors[i].expire_check()):

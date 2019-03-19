@@ -101,7 +101,6 @@ class Obstacle:
         self.pos = Vector(random.randrange(self.width, parent_length - self.width), 0)
         self.parentPos = -1
 
-
     def draw(self, canvas, pos):
         self.parentPos = pos
         x1 = self.pos + pos
@@ -113,8 +112,10 @@ class Obstacle:
 
 class Floor:
     def __init__(self, start=False):
+        self.img = simplegui.load_image("http://osmond.uk.to/ground.png")
         self.height = random.randrange(30, 70)
         self.obstacles = []
+        self.start = start
         if start:
             self.pos = Vector(0, HEIGHT - 15)
             self.length = WIDTH * 1.25
@@ -139,12 +140,11 @@ class Floor:
     def draw(self, canvas):
         for obstacle in self.obstacles:
             obstacle.draw(canvas, self.pos)
-
         x1 = self.pos
         x2 = self.pos + Vector(0, self.height)
         x3 = self.pos + Vector(self.length, self.height)
         x4 = self.pos + Vector(self.length, 0)
-        canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Green', 'Green')
+        canvas.draw_image(self.img, (500, 791 // 2), (1000, 791), (self.pos + Vector(self.length/2, self.height/2)).get_p(), (self.length, self.height))
 
         global SPEED
         self.pos.subtract(Vector(SPEED, 0))
@@ -224,7 +224,6 @@ kbd = KeyHandler()
 
 
 class SideScroller:
-
     def __init__(self):
         self.floors = []
         self.floors.append(Floor(True))

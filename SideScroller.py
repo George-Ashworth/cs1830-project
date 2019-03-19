@@ -27,14 +27,14 @@ GRAVITY = 0.020
 
 class Player:
 
-    def __init__(self):
+    def __init__(self):  # init the player of w x h halfway up the screen
         self.pos = Vector(50, HEIGHT / 2)
         self.vel = Vector()
-        self.height = 100
-        self.width = 75
+        self.height = 40
+        self.width = 20
         self.gravity = Vector(0, 9.8)
 
-    def draw(self, canvas):
+    def draw(self, canvas):  # draw the player
         p1 = self.pos  # bottom left
         p2 = self.pos + Vector(0, -self.height)  # topleft
         p3 = self.pos + Vector(self.width, 0)  # bottom right
@@ -42,13 +42,13 @@ class Player:
 
         canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
 
-    def movePlayer(self, yVal):
+    def movePlayer(self, yVal):  # this moves the player in the y direction
         global GRAVITY
         self.vel = self.vel + Vector(0, yVal)
         self.pos.add(self.vel)
 
 
-class KeyHandler:
+class KeyHandler: # when the player presses space, the character jumps
 
     def __init__(self):
         self.space = False
@@ -123,6 +123,7 @@ class Interaction:
         self.inCollision = False
 
     def update(self):
+
         if self.on_platform_x():
             if self.player.pos.y >= self.other.pos.y - 1:
                 self.no_clipping()
@@ -131,9 +132,12 @@ class Interaction:
 
         elif self.off_platform_x():
             if self.falling():
-                self.inCollision = False
-                print("game over")
-                frame.stop()
+                if self.collide_left_wall():
+                    print("left wall")
+                else:
+                    self.inCollision = False
+                    print("game over")
+                    frame.stop()
 
         return self.inCollision
 
@@ -144,11 +148,13 @@ class Interaction:
         return (self.player.pos.x < self.other.pos.x) or self.player.pos.x > self.other.pos.x + self.other.length
 
     def on_platform_x(self):
-        return (self.player.pos.x >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length)
+        return (self.player.pos.x + self.player.width >= self.other.pos.x) & (self.player.pos.x      <= self.other.pos.x + self.other.length)
 
     def falling(self):
-        return self.player.pos.y - self.player.height > self.other.pos.y
+        return self.player.pos.y - self.player.height - self.player.height > self.other.pos.y
 
+    def collide_left_wall(self):
+        return self.player.pos.x + self.player.width == self.other.pos.x
 
 
 kbd = KeyHandler()
@@ -164,7 +170,7 @@ class SideScroller:
     def draw(self, canvas):
         maximum = len(self.floors)
         i = 0
-        inter = Interaction(self.p, self.floors[i])
+        inter = Interaction(self.p, self.floors[i ])
 
         if inter.update(): #if its colliding
             if kbd.space:
@@ -196,7 +202,7 @@ ss = SideScroller()
 def draw(canvas):
     global SPEED
     ss.draw(canvas)
-    SPEED += 0.0008
+    SPEED += 0.001
     # print(SPEED)
 
 

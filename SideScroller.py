@@ -9,14 +9,15 @@
 
 
 
-from Vector import Vector
 import random
 import math
 
 try:
     import simplegui
+    from user303_wxSmFEVIaV_0 import Vector
 except ImportError:
     import SimpleGUICS2Pygame.simpleguics2pygame as simplegui
+    from Vector import Vector
 
 WIDTH = 960
 HEIGHT = 540
@@ -58,6 +59,7 @@ class Player:
         self.height = 40
         self.width = 20
         self.gravity = Vector(0, 9.8)
+        self.inObsCollision = False
 
 
     def draw(self, canvas):  # draw the player
@@ -101,9 +103,11 @@ class Obstacle:
         self.height = 20
         self.width = 20
         self.pos = Vector(random.randrange(self.width, parent_length - self.width), 0)
+        self.parentPos = -1
 
 
     def draw(self, canvas, pos):
+        self.parentPos = pos
         x1 = self.pos + pos
         x2 = x1 + Vector(0, -self.height)
         x3 = x1 + Vector(self.width, -self.height)
@@ -155,13 +159,18 @@ class ObstacleInteraction:
     def __init__(self, player, other):
         self.player = player
         self.other = other
-        self.inCollision = False
 
     def update(self):
-        # if player hits an object
-        if self.player.pos.x == self.other.pos.x and self.player.pos.y == self.other.pos.y:
-            self.inCollision = True
-            print("colliding with obstacle")
+        if type(self.other.parentPos) != type(1):
+            xOffset = self.other.parentPos.x
+            yOffset = self.other.parentPos.y
+            # if player hits an object
+            if self.player.pos.x >= self.other.pos.x + xOffset and self.player.pos.x <= self.other.pos.x + self.other.width + xOffset and self.player.pos.y >= self.other.pos.y - self.other.height + yOffset:
+                if not self.player.inObsCollision:
+                    self.player.inObsCollision = True
+                    self.player.pos -= Vector(2, 0)
+                elif self.player.inObsCollision:
+                    self.player.inObsCollision = False
 
 
 class FloorInteraction:
@@ -221,7 +230,7 @@ class SideScroller:
         max_floor = len(self.floors)
         i = 0
         j = 0
-
+        self.c.draw(canvas)
         inter_floor = FloorInteraction(self.p, self.floors[i])
 
         while i < max_floor:
@@ -247,7 +256,7 @@ class SideScroller:
             self.p.movePlayer(GRAVITY)
             self.p.increment_score(SPEED)
             self.p.draw_score(canvas)
-            self.c.draw(canvas)
+
             self.p.draw(canvas)
             self.floors[i].draw(canvas)
 

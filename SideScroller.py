@@ -1,6 +1,12 @@
 # things to do:
-# draw the player
-# add space bar event for jumping
+# decide on player model size
+# obstacle interaction
+# artwork
+# modify value of gravity for realism?
+# shooting projectiles?
+# high score calculation and display
+# bouncing off left wall when falling
+
 
 
 from Vector import Vector
@@ -15,7 +21,7 @@ WIDTH = 960
 HEIGHT = 540
 
 SPEED = 3
-GRAVITY = 0.025
+GRAVITY = 0.020
 
 
 
@@ -162,7 +168,7 @@ class SideScroller:
 
         if inter.update(): #if its colliding
             if kbd.space:
-                self.p.movePlayer(-2)
+                self.p.movePlayer(-2.5)
                 kbd.space = False
 
 

@@ -25,6 +25,10 @@ HEIGHT = 540
 SPEED = 3
 GRAVITY = 0.080
 
+CHASER_IMG = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
+OB_IMG = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
+FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
+
 
 class Chaser:
 
@@ -37,10 +41,10 @@ class Chaser:
         self.vel = Vector(SPEED * 0.8, 0)
         self.height = HEIGHT
         self.width = 55
-        self.img = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
 
     def draw(self, canvas):
-        canvas.draw_image(self.img, (150, 810), (300, 1620),
+        global CHASER_IMG
+        canvas.draw_image(CHASER_IMG, (150, 810), (300, 1620),
                           (self.pos + Vector(self.width-5, self.height / 2)).get_p(), (100, self.height))
 
     def move_chaser(self, distance):
@@ -92,7 +96,6 @@ class KeyHandler:  # when the player presses space, the character jumps
 class Obstacle:
 
     def __init__(self, ob_type, parent_length):
-        self.img = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
         self.ob_type = ob_type
         self.height = 40
         self.width = 40
@@ -101,14 +104,14 @@ class Obstacle:
 
     def draw(self, canvas, pos):
         self.parentPos = pos
-        canvas.draw_image(self.img, (400, 400), (800, 800),
+        global OB_IMG
+        canvas.draw_image(OB_IMG, (400, 400), (800, 800),
                           (self.pos + pos + Vector(self.width / 2, (-self.height / 2)+10)).get_p(),
                           (self.width, self.height), 3.14)
 
 
 class Floor:
     def __init__(self, player, start=False):
-        self.img = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
         self.height = random.randrange(30, 70)
         self.obstacles = []
         self.inter_obs = []
@@ -139,7 +142,8 @@ class Floor:
     def draw(self, canvas):
         for obstacle in self.obstacles:
             obstacle.draw(canvas, self.pos)
-        canvas.draw_image(self.img, (500, 791 // 2), (1000, 791),
+        global FLOOR_IMG
+        canvas.draw_image(FLOOR_IMG, (500, 791 // 2), (1000, 791),
                           (self.pos + Vector(self.length/2, self.height/2)).get_p(), (self.length, self.height))
 
         global SPEED

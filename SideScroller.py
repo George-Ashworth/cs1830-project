@@ -59,7 +59,6 @@ class Player:
         self.height = 40
         self.width = 20
         self.gravity = Vector(0, 9.8)
-        self.inObsCollision = False
 
     def draw(self, canvas):  # draw the player
         p1 = self.pos  # bottom left
@@ -104,20 +103,17 @@ class Obstacle:
 
     def draw(self, canvas, pos):
         self.parentPos = pos
-        x1 = self.pos + pos
-        x2 = x1 + Vector(0, -self.height)
-        x3 = x1 + Vector(self.width, -self.height)
-        x4 = x1 + Vector(self.width, 0)
-        #canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Blue', 'Blue')
         canvas.draw_image(self.img, (400, 400), (800, 800),
-                          (self.pos + pos + Vector(self.width / 2, (-self.height / 2)+10)).get_p(), (self.width, self.height), 3.14)
+                          (self.pos + pos + Vector(self.width / 2, (-self.height / 2)+10)).get_p(),
+                          (self.width, self.height), 3.14)
 
 
 class Floor:
-    def __init__(self, start=False):
+    def __init__(self, player, start=False):
         self.img = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
         self.height = random.randrange(30, 70)
         self.obstacles = []
+        self.inter_obs = []
         self.start = start
         if start:
             self.pos = Vector(0, HEIGHT - 15)
@@ -126,7 +122,9 @@ class Floor:
             self.pos = Vector(WIDTH + random.randrange(50, 200), HEIGHT - self.height)
             self.length = random.randrange(100, 500)
             for i in range(0, random.randint(0, self.length // 100)):
-                self.obstacles.append(Obstacle(1, self.length))
+                o = Obstacle(1, self.length)
+                self.obstacles.append(o)
+                self.inter_obs.append(ObstacleInteraction(player, o))
 
     def expire_check(self):
         if self.pos.x + self.length <= 0:
@@ -143,11 +141,8 @@ class Floor:
     def draw(self, canvas):
         for obstacle in self.obstacles:
             obstacle.draw(canvas, self.pos)
-        x1 = self.pos
-        x2 = self.pos + Vector(0, self.height)
-        x3 = self.pos + Vector(self.length, self.height)
-        x4 = self.pos + Vector(self.length, 0)
-        canvas.draw_image(self.img, (500, 791 // 2), (1000, 791), (self.pos + Vector(self.length/2, self.height/2)).get_p(), (self.length, self.height))
+        canvas.draw_image(self.img, (500, 791 // 2), (1000, 791),
+                          (self.pos + Vector(self.length/2, self.height/2)).get_p(), (self.length, self.height))
 
         global SPEED
         self.pos.subtract(Vector(SPEED, 0))
@@ -158,18 +153,26 @@ class ObstacleInteraction:
     def __init__(self, player, other):
         self.player = player
         self.other = other
+        self.inCollision = False
 
     def update(self):
         if type(self.other.parentPos) != type(1):
             xOffset = self.other.parentPos.x
             yOffset = self.other.parentPos.y
+
+            #print(str(self.other.pos.x + xOffset) + " - " + str(self.player.pos.x) + " - " + str(self.other.pos.x + self.other.width + xOffset))
+
             # if player hits an object
-            if self.player.pos.x >= self.other.pos.x + xOffset and self.player.pos.x <= self.other.pos.x + self.other.width + xOffset and self.player.pos.y >= self.other.pos.y - self.other.height + yOffset:
-                if not self.player.inObsCollision:
-                    self.player.inObsCollision = True
-                    self.player.pos -= Vector(2, 0)
-                elif self.player.inObsCollision:
-                    self.player.inObsCollision = False
+            if self.player.pos.x >= self.other.pos.x + xOffset + 5and \
+                    self.player.pos.x <= self.other.pos.x + self.other.width + xOffset - 5and \
+                    self.player.pos.y >= self.other.pos.y - self.other.height + yOffset + 5:
+                if not self.inCollision:
+                    print("in collision")
+                    self.inCollision = True
+                    self.player.pos -= Vector(6, 0)
+            elif self.inCollision:
+                print("reverting")
+                self.inCollision = False
 
 
 class FloorInteraction:
@@ -229,8 +232,8 @@ kbd = KeyHandler()
 class SideScroller:
     def __init__(self):
         self.floors = []
-        self.floors.append(Floor(True))
         self.p = Player()
+        self.floors.append(Floor(self.p, True))
         self.c = Chaser()
 
     def draw(self, canvas):
@@ -257,17 +260,15 @@ class SideScroller:
                 i = i - 1
             else:
                 if (i == max_floor - 1) & (self.floors[i].create_check()):
-                    self.floors.append(Floor())
+                    self.floors.append(Floor(self.p))
 
             if inter_floor.update():  # if its colliding
                 if kbd.space:
                     self.p.movePlayer(-5)
                     kbd.space = False
 
-            for o in self.floors[i].obstacles:
-                inter_obs = ObstacleInteraction(self.p, o)
-
-                inter_obs.update()
+            for o in self.floors[i].inter_obs:
+                o.update()
 
             inter_floor.update()
 

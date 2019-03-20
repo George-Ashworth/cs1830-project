@@ -95,9 +95,10 @@ class KeyHandler:  # when the player presses space, the character jumps
 class Obstacle:
 
     def __init__(self, ob_type, parent_length):
+        self.img = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
         self.ob_type = ob_type
-        self.height = 20
-        self.width = 20
+        self.height = 40
+        self.width = 40
         self.pos = Vector(random.randrange(self.width, parent_length - self.width), 0)
         self.parentPos = -1
 
@@ -107,7 +108,9 @@ class Obstacle:
         x2 = x1 + Vector(0, -self.height)
         x3 = x1 + Vector(self.width, -self.height)
         x4 = x1 + Vector(self.width, 0)
-        canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Blue', 'Blue')
+        #canvas.draw_polygon([x1.get_p(), x2.get_p(), x3.get_p(), x4.get_p()], 12, 'Blue', 'Blue')
+        canvas.draw_image(self.img, (400, 400), (800, 800),
+                          (self.pos + pos + Vector(self.width / 2, (-self.height / 2)+10)).get_p(), (self.width, self.height), 3.14)
 
 
 class Floor:

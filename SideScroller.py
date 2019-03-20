@@ -28,28 +28,39 @@ GRAVITY = 0.080
 CHASER_IMG = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
 OB_IMG = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
 FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
+BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=1KwCQ-JInrzxk3f_X4Xq62UB10RA5AS3p")
 
 
 class Chaser:
 
     def __init__(self):
         self.pos = Vector()
-        self.p1 = 0
-        self.p2 = 0
-        self.p3 = 0
-        self.p4 = 0
-        self.vel = Vector(SPEED * 0.8, 0)
         self.height = HEIGHT
         self.width = 55
+        self.rising = False
+        self.counter = 0
+        self.rotation = 0
 
     def draw(self, canvas):
         global CHASER_IMG
         canvas.draw_image(CHASER_IMG, (150, 810), (300, 1620),
-                          (self.pos + Vector(self.width-5, self.height / 2)).get_p(), (100, self.height))
+                          (self.pos + Vector(self.width-5, self.height / 2)).get_p(),
+                          (100, self.height), self.rotation)
 
     def move_chaser(self, distance):
-        self.p3 = self.p3 + distance
-        self.p4 = self.p4 + distance
+        if self.rising:
+            distance *= -1
+        self.pos += Vector(0, distance)
+
+        if self.pos.y < 0:
+            self.rising = False
+
+        if self.pos.y > 20:
+            self.rising = True
+
+        if self.counter % 5 == 0:
+            self.rotation = random.randrange(-1, 1)/100
+        self.counter += 1
 
 
 class Player:
@@ -165,8 +176,8 @@ class ObstacleInteraction:
             #print(str(self.other.pos.x + xOffset) + " - " + str(self.player.pos.x) + " - " + str(self.other.pos.x + self.other.width + xOffset))
 
             # if player hits an object
-            if self.player.pos.x >= self.other.pos.x + xOffset + 5and \
-                    self.player.pos.x <= self.other.pos.x + self.other.width + xOffset - 5and \
+            if self.player.pos.x >= self.other.pos.x + xOffset + 5 and \
+                    self.player.pos.x <= self.other.pos.x + self.other.width + xOffset - 5 and \
                     self.player.pos.y >= self.other.pos.y - self.other.height + yOffset + 5:
                 if not self.inCollision:
                     print("in collision")
@@ -239,7 +250,10 @@ class SideScroller:
         self.c = Chaser()
 
     def draw(self, canvas):
-        global SPEED
+        global SPEED, BG_IMG, WIDTH, HEIGHT
+        canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
+                          (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
+
         max_floor = len(self.floors)
         i = 0
         j = 0
@@ -249,7 +263,7 @@ class SideScroller:
         inter_chaser = ChaserInteraction(self.p, self.c)
         inter_chaser.update()
 
-        self.c.move_chaser(5)
+        self.c.move_chaser(0.5)
         self.p.movePlayer(GRAVITY)
         self.p.increment_score(SPEED)
         self.p.draw_score(canvas)

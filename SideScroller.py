@@ -36,14 +36,12 @@ class Chaser:
         self.p4 = 0
         self.vel = Vector(SPEED * 0.8, 0)
         self.height = HEIGHT
-        self.width = 50
+        self.width = 55
+        self.img = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
 
     def draw(self, canvas):
-        p1 = self.pos  # bottom left
-        p2 = self.pos + Vector(0, + self.height)  # topleft
-        p3 = self.pos + Vector(self.width, 0)  # bottom right
-        p4 = self.pos + Vector(self.width, + self.height)  # top right
-        canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Red', 'Red')
+        canvas.draw_image(self.img, (150, 810), (300, 1620),
+                          (self.pos + Vector(self.width-5, self.height / 2)).get_p(), (100, self.height))
 
     def move_chaser(self, distance):
         self.p3 = self.p3 + distance
@@ -53,7 +51,7 @@ class Chaser:
 class Player:
 
     def __init__(self):  # init the player of w x h halfway up the screen
-        self.pos = Vector(75, HEIGHT / 2)
+        self.pos = Vector(80, HEIGHT / 2)
         self.score = 0
         self.vel = Vector()
         self.height = 40

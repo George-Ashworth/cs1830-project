@@ -26,11 +26,12 @@ SPEED = 3
 GRAVITY = 0.080
 
 CHASER_IMG = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
-OB_IMG = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
+OB1_IMG = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
+OB2_IMG = simplegui.load_image("https://docs.google.com/uc?id=17Aeo3JKUsQy6k5qfHhT1zvIPXqhZfIQ7")
 FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
 BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=1KwCQ-JInrzxk3f_X4Xq62UB10RA5AS3p")
 
-
+# "https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6"
 class Chaser:
 
     def __init__(self):
@@ -112,14 +113,26 @@ class Obstacle:
         self.width = 40
         self.pos = Vector(random.randrange(self.width, parent_length - self.width), 0)
         self.parentPos = -1
+        print(ob_type)
 
     def draw(self, canvas, pos):
         self.parentPos = pos
-        global OB_IMG
-        canvas.draw_image(OB_IMG, (400, 400), (800, 800),
-                          (self.pos + pos + Vector(self.width / 2, (-self.height / 2)+10)).get_p(),
-                          (self.width, self.height), 3.14)
+        global OB1_IMG
+        global OB2_IMG
 
+        if self.ob_type == 1:
+            canvas.draw_image(OB1_IMG, (400, 400), (800, 800),
+                              (self.pos + pos + Vector(self.width / 2, (-self.height / 2) + 10)).get_p(),
+                              (self.width, self.height), 3.14)
+
+        if self.ob_type == 2:
+            canvas.draw_image(OB2_IMG, (400, 400), (800, 800),
+                              (self.pos + pos + Vector(self.width / 2, (-self.height / 2) + 10)).get_p(),
+                              (self.width, self.height), 3.14)
+
+
+    def get_type(self):
+        return self.ob_type
 
 class Floor:
     def __init__(self, player, start=False):
@@ -134,7 +147,8 @@ class Floor:
             self.pos = Vector(WIDTH + random.randrange(50, 200), HEIGHT - self.height)
             self.length = random.randrange(100, 500)
             for i in range(0, random.randint(0, self.length // 100)):
-                o = Obstacle(1, self.length)
+                gen_ob = random.randrange(1, 3)
+                o = Obstacle(gen_ob, self.length)
                 self.obstacles.append(o)
                 self.inter_obs.append(ObstacleInteraction(player, o))
 
@@ -173,16 +187,21 @@ class ObstacleInteraction:
             xOffset = self.other.parentPos.x
             yOffset = self.other.parentPos.y
 
-            #print(str(self.other.pos.x + xOffset) + " - " + str(self.player.pos.x) + " - " + str(self.other.pos.x + self.other.width + xOffset))
 
             # if player hits an object
             if self.player.pos.x >= self.other.pos.x + xOffset + 5 and \
                     self.player.pos.x <= self.other.pos.x + self.other.width + xOffset - 5 and \
                     self.player.pos.y >= self.other.pos.y - self.other.height + yOffset + 5:
+
                 if not self.inCollision:
                     print("in collision")
                     self.inCollision = True
-                    self.player.pos -= Vector(6, 0)
+                    if self.other.ob_type == 1:
+
+                        self.player.pos -= Vector(6, 0)
+                    elif self.other.ob_type == 2:
+
+                        self.player.pos += Vector(6, 0)
             elif self.inCollision:
                 print("reverting")
                 self.inCollision = False
@@ -251,12 +270,11 @@ class SideScroller:
 
     def draw(self, canvas):
         global SPEED, BG_IMG, WIDTH, HEIGHT
-        canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
-                          (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
+        # canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
+        #                   (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
         max_floor = len(self.floors)
         i = 0
-        j = 0
         self.c.draw(canvas)
         inter_floor = FloorInteraction(self.p, self.floors[i])
 

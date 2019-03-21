@@ -24,13 +24,17 @@ HEIGHT = 540
 SPEED = 3
 GRAVITY = 0.080
 
+
+MENU_IMG = simplegui.load_image("https://docs.google.com/uc?id=1iz6dwcVkAMKCy0bpfLWoI4WVukMnVLaQ")
 CHASER_IMG = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
 OB1_IMG = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
 OB2_IMG = simplegui.load_image("https://docs.google.com/uc?id=17Aeo3JKUsQy6k5qfHhT1zvIPXqhZfIQ7")
 FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
 BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=1KwCQ-JInrzxk3f_X4Xq62UB10RA5AS3p")
+UFO_IMG = simplegui.load_image("https://docs.google.com/uc?id=1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf")
 
-# "https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6"
+
+# https://drive.google.com/file/d/1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf/view?usp=sharing
 
 
 class Chaser:
@@ -227,7 +231,8 @@ class FloorInteraction:
             if self.falling():
                 self.inCollision = False
                 print("game over")
-                frame.stop()
+                global ss
+                ss.state = 0
 
         return self.inCollision
 
@@ -255,65 +260,134 @@ class ChaserInteraction:
     def update(self):
         if self.player.pos.x <= self.other.width:
             print("game over")
-            frame.stop()
+            global ss
+            ss.state = 0
+
+
+class Welcome:
+
+    def __init__(self, frame):
+        class UFO:
+            def __init__(self):
+                self.pos = Vector(random.randrange(0, WIDTH), random.randrange(0, HEIGHT))*3
+                self.vel = Vector(random.randrange(-WIDTH, WIDTH), random.randrange(-HEIGHT, HEIGHT)).get_normalized()
+                self.rotation = 0
+                self.counter = 0
+
+            def draw(self, canvas):
+                global UFO_IMG
+                canvas.draw_image(UFO_IMG, (150, 62), (300, 124),
+                                  self.pos.get_p(), (100, 41), self.rotation)
+
+            def update(self):
+                if self.pos.y >= HEIGHT:
+                    self.pos.y = 0
+                elif self.pos.y <= 0:
+                    self.pos.y = HEIGHT
+
+                if self.pos.x >= WIDTH:
+                    self.pos.x = 0
+                elif self.pos.x <= 0:
+                    self.pos.x = WIDTH
+
+                self.pos += self.vel
+                if self.counter % 5 == 0:
+                    self.rotation = random.randrange(-5, 5) / 100
+                self.counter += 1
+
+        class Button:
+            def __init__(self, x, y, width, height, frame):
+                self.x = x
+                self.y = y
+                self.width = width
+                self.height = height
+                self.frame = frame
+
+            def clickCheck(self, pos):
+                global ss, SPEED
+                if ss.state == 0:
+                    if ((pos[0] >= self.x) & (pos[0] <= self.x + self.width) & (pos[1] >= self.y) & (
+                            pos[1] <= self.y + self.height)):
+                        ss = SideScroller(self.frame)
+                        ss.state = 1
+                        SPEED = 3
+                        print("click")
+                    else:
+                        print("noClick")
+
+        self.start = Button(400, 267, 150, 68, frame)
+        self.ufos = []
+        for i in range(0, 10):
+            self.ufos.append(UFO())
+
+        frame.set_mouseclick_handler(self.start.clickCheck)
+
+    def draw(self, canvas):
+        global WIDTH, HEIGHT, MENU_IMG
+        for ufo in self.ufos:
+            ufo.draw(canvas)
+            ufo.update()
+        canvas.draw_image(MENU_IMG, (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT), (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
 
 kbd = KeyHandler()
 
 
 class SideScroller:
-    def __init__(self):
+    def __init__(self, frame):
         self.floors = []
         self.p = Player()
         self.floors.append(Floor(self.p, True))
         self.c = Chaser()
+        self.w = Welcome(frame)
+        self.state = 0
 
     def draw(self, canvas):
         global SPEED, BG_IMG, WIDTH, HEIGHT
         # canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
         #                   (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
-        max_floor = len(self.floors)
-        i = 0
-        self.c.draw(canvas)
-        inter_floor = FloorInteraction(self.p, self.floors[i])
+        if self.state == 0:
+            self.w.draw(canvas)
 
-        inter_chaser = ChaserInteraction(self.p, self.c)
-        inter_chaser.update()
-
-        self.c.move_chaser(0.5)
-        self.p.movePlayer(GRAVITY)
-        self.p.increment_score(SPEED)
-        self.p.draw_score(canvas)
-
-        self.p.draw(canvas)
-
-        while i < max_floor:
-            if (i == 0) & (self.floors[i].expire_check()):
-                self.floors.pop(0)
-                i = i - 1
-            else:
-                if (i == max_floor - 1) & (self.floors[i].create_check()):
-                    self.floors.append(Floor(self.p))
-
-            if inter_floor.update():  # if its colliding
-                if kbd.space:
-                    self.p.movePlayer(-5)
-                    kbd.space = False
-
-            for o in self.floors[i].inter_obs:
-                o.update()
-
-            inter_floor.update()
-
-            self.floors[i].draw(canvas)
-
+        elif self.state == 1:
             max_floor = len(self.floors)
-            i = i + 1
+            i = 0
+            self.c.draw(canvas)
+            inter_floor = FloorInteraction(self.p, self.floors[i])
 
+            inter_chaser = ChaserInteraction(self.p, self.c)
+            inter_chaser.update()
 
+            self.c.move_chaser(0.5)
+            self.p.movePlayer(GRAVITY)
+            self.p.increment_score(SPEED)
+            self.p.draw_score(canvas)
 
-ss = SideScroller()
+            self.p.draw(canvas)
+
+            while i < max_floor:
+                if (i == 0) & (self.floors[i].expire_check()):
+                    self.floors.pop(0)
+                    i = i - 1
+                else:
+                    if (i == max_floor - 1) & (self.floors[i].create_check()):
+                        self.floors.append(Floor(self.p))
+
+                if inter_floor.update():  # if its colliding
+                    if kbd.space:
+                        self.p.movePlayer(-5)
+                        kbd.space = False
+
+                for o in self.floors[i].inter_obs:
+                    o.update()
+
+                inter_floor.update()
+
+                self.floors[i].draw(canvas)
+
+                max_floor = len(self.floors)
+                i = i + 1
 
 
 # Handler to draw on canvas
@@ -328,6 +402,8 @@ def draw(canvas):
 frame = simplegui.create_frame("Home", WIDTH, HEIGHT)
 frame.set_draw_handler(draw)
 frame.set_keydown_handler(kbd.key_down)
+
+ss = SideScroller(frame)
 
 # Start the frame animation
 frame.start()

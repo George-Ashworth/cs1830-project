@@ -281,27 +281,31 @@ class Welcome:
 
             def update(self):
                 if self.pos.y >= HEIGHT:
-                    self.vel = Vector(random.randrange(-WIDTH, WIDTH),
-                                      random.randrange(-HEIGHT, HEIGHT)).get_normalized() * 2
-                    self.pos.y = 0
-                elif self.pos.y <= 0:
-                    self.vel = Vector(random.randrange(-WIDTH, WIDTH),
+                    self.vel = Vector(random.randrange(-WIDTH, 0),
                                       random.randrange(-HEIGHT, HEIGHT)).get_normalized() * 2
                     self.pos.y = HEIGHT
+                elif self.pos.y <= 0:
+                    self.vel = Vector(random.randrange(0, WIDTH),
+                                      random.randrange(-HEIGHT, HEIGHT)).get_normalized() * 2
+                    self.pos.y = 0
 
                 if self.pos.x >= WIDTH:
                     self.vel = Vector(random.randrange(-WIDTH, WIDTH),
-                                      random.randrange(-HEIGHT, HEIGHT)).get_normalized() * 2
-                    self.pos.x = 0
+                                      random.randrange(-HEIGHT, 0)).get_normalized() * 2
+                    self.pos.x = WIDTH
                 elif self.pos.x <= 0:
                     self.vel = Vector(random.randrange(-WIDTH, WIDTH),
-                                      random.randrange(-HEIGHT, HEIGHT)).get_normalized() * 2
-                    self.pos.x = WIDTH
+                                      random.randrange(0, HEIGHT)).get_normalized() * 2
+                    self.pos.x = 0
 
+                if self.vel.x >= 0:
+                    self.rotation = 0.1
+                else:
+                    self.rotation = -0.1
                 self.pos += self.vel
-                if self.counter % 5 == 0:
-                    self.rotation = random.randrange(-5, 5) / 100
-                self.counter += 1
+               # if self.counter % 5 == 0:
+                #    self.rotation = random.randrange(-5, 5) / 100
+               # self.counter += 1
 
         class Button:
             def __init__(self, x, y, width, height, frame):
@@ -352,8 +356,8 @@ class SideScroller:
 
     def draw(self, canvas):
         global SPEED, BG_IMG, WIDTH, HEIGHT
-        canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
-                           (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
+        #canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
+        #                   (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
         if self.state == 0:
             self.w.draw(canvas)

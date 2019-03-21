@@ -36,6 +36,37 @@ UFO_IMG = simplegui.load_image("https://docs.google.com/uc?id=1xlSZB5-LkXBxtAx7e
 
 # https://drive.google.com/file/d/1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf/view?usp=sharing
 
+# Sprite sheet class that will iterate through a sheet horizontally
+# assumes equal spacing
+
+class SpriteSheet:
+    def __init__(self, url, height, width, rows, cols):
+        self.img = simplegui.load_image(url)
+        self.height = height
+        self.width = width
+        self.rows = rows
+        self.cols = cols
+        self.frameIndex = [0, 0]
+        self.frameWidth = width / rows
+        self.frameHeight = height / cols
+        self.frameCentreX = self.frameWidth / 2
+        self.frameCentreY = self.frameHeight / 2
+
+    def draw(self, canvas, pos_x, pos_y):
+        canvas.draw_image(self.img, (self.frameWidth * self.frameIndex[0] + self.frameCentreX,
+                                     self.frameHeight * self.frameIndex[1] + self.frameCentreY),
+                          (self.frameWidth, self.frameHeight), (pos_x, pos_y), (self.frameWidth, self.frameHeight))
+
+    def next_frame(self):
+        if self.frameIndex[0] == self.rows - 1:
+            if self.frameIndex[1] == self.cols - 1:
+                self.frameIndex = [0, 0]
+            else:
+                self.frameIndex[1] = self.frameIndex[1] + 1
+                self.frameIndex[0] = 0
+        else:
+            self.frameIndex[0] = self.frameIndex[0] + 1
+
 
 class Chaser:
 

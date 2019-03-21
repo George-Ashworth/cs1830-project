@@ -8,7 +8,6 @@
 # bouncing off left wall when falling
 
 
-
 import random
 import math
 
@@ -32,6 +31,8 @@ FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfX
 BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=1KwCQ-JInrzxk3f_X4Xq62UB10RA5AS3p")
 
 # "https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6"
+
+
 class Chaser:
 
     def __init__(self):
@@ -126,13 +127,13 @@ class Obstacle:
                               (self.width, self.height), 3.14)
 
         if self.ob_type == 2:
-            canvas.draw_image(OB2_IMG, (400, 400), (800, 800),
+            canvas.draw_image(OB2_IMG, (125, 125), (250, 250),
                               (self.pos + pos + Vector(self.width / 2, (-self.height / 2) + 10)).get_p(),
-                              (self.width, self.height), 3.14)
-
+                              (self.width, self.height), 1.59)
 
     def get_type(self):
         return self.ob_type
+
 
 class Floor:
     def __init__(self, player, start=False):
@@ -210,7 +211,6 @@ class ObstacleInteraction:
 class FloorInteraction:
 
     def __init__(self, player, other):
-
         self.player = player
         self.other = other
         self.inCollision = False

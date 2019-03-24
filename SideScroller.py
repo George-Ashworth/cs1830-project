@@ -24,6 +24,8 @@ HEIGHT = 540
 SPEED = 3
 GRAVITY = 0.080
 
+frame_count = 0
+
 
 MENU_IMG = simplegui.load_image("https://docs.google.com/uc?id=1iz6dwcVkAMKCy0bpfLWoI4WVukMnVLaQ")
 CHASER_IMG = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfWvZZCZ8O-xyq0h9x2DI")
@@ -32,7 +34,6 @@ OB2_IMG = simplegui.load_image("https://docs.google.com/uc?id=17Aeo3JKUsQy6k5qfH
 FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
 BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=1KwCQ-JInrzxk3f_X4Xq62UB10RA5AS3p")
 UFO_IMG = simplegui.load_image("https://docs.google.com/uc?id=1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf")
-
 
 # https://drive.google.com/file/d/1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf/view?usp=sharing
 
@@ -109,13 +110,16 @@ class Player:
         self.height = 40
         self.width = 20
         self.gravity = Vector(0, 9.8)
+        self.running = SpriteSheet("https://docs.google.com/uc?id=1wPK7fHRx4zOP-AgjnRRNUiQvLD55ajms", 123, 126, 3, 3)
+        self.jumping = SpriteSheet("https://docs.google.com/uc?id=1l8VgfNeWr4yVC1hgTF_dVnrZvN0xosRv", 123, 126, 3, 3)
 
     def draw(self, canvas):  # draw the player
-        p1 = self.pos  # bottom left
-        p2 = self.pos + Vector(0, -self.height)  # topleft
-        p3 = self.pos + Vector(self.width, 0)  # bottom right
-        p4 = self.pos + Vector(self.width, -self.height)  # top right
-        canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
+        pass
+        #p1 = self.pos  # bottom left
+        #p2 = self.pos + Vector(0, -self.height)  # topleft
+        #p3 = self.pos + Vector(self.width, 0)  # bottom right
+        #p4 = self.pos + Vector(self.width, -self.height)  # top right
+        #canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
 
     def draw_score(self, canvas):
         global WIDTH
@@ -129,6 +133,15 @@ class Player:
     def increment_score(self, speed):
         self.score += speed * 1.5
         self.score = math.floor(self.score)
+
+    def player_running(self, canvas):
+        global WIDTH, HEIGHT, frame_count
+        if frame_count % 3 == 0:
+            print(self.running.frameIndex)
+            self.running.next_frame()
+            if self.running.frameIndex == [2, 2]:
+                self.running.frameIndex = [0, 0]
+        self.running.draw(canvas, self.pos.x + self.width/2, self.pos.y - self.height/2 + 5)
 
 
 class KeyHandler:  # when the player presses space, the character jumps
@@ -386,10 +399,11 @@ class SideScroller:
         self.state = 0
 
     def draw(self, canvas):
-        global SPEED, BG_IMG, WIDTH, HEIGHT
+        global SPEED, BG_IMG, WIDTH, HEIGHT, frame_count
         #canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
         #                   (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
+        self.p.player_running(canvas)
         if self.state == 0:
             self.w.draw(canvas)
 
@@ -431,6 +445,8 @@ class SideScroller:
 
                 max_floor = len(self.floors)
                 i = i + 1
+
+        frame_count += 1
 
 
 # Handler to draw on canvas

@@ -32,7 +32,7 @@ CHASER_IMG = simplegui.load_image("https://docs.google.com/uc?id=1Nkn_brrWg14OfW
 OB1_IMG = simplegui.load_image("https://docs.google.com/uc?id=1nYT2SptZ9KmfQBL0uis_7BDYn69aDOZ6")
 OB2_IMG = simplegui.load_image("https://docs.google.com/uc?id=17Aeo3JKUsQy6k5qfHhT1zvIPXqhZfIQ7")
 FLOOR_IMG = simplegui.load_image("https://docs.google.com/uc?id=1VzvuRJPH5tCuYfXYO-Paw5hgEL-weVqt")
-BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=1KwCQ-JInrzxk3f_X4Xq62UB10RA5AS3p")
+BG_IMG = simplegui.load_image("https://docs.google.com/uc?id=166IXgm_n_i_4CL1JroWUJzqtL5cjkHsk")
 UFO_IMG = simplegui.load_image("https://docs.google.com/uc?id=1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf")
 
 # https://drive.google.com/file/d/1xlSZB5-LkXBxtAx7eFPPKeX-WBDYEwMf/view?usp=sharing
@@ -400,8 +400,8 @@ class SideScroller:
 
     def draw(self, canvas):
         global SPEED, BG_IMG, WIDTH, HEIGHT, frame_count
-        #canvas.draw_image(BG_IMG, (500, 281), (1000, 562),
-        #                   (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
+        canvas.draw_image(BG_IMG, (960, 540), (1920, 1080),
+                           (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
         self.p.player_running(canvas)
         if self.state == 0:

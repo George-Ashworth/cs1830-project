@@ -113,13 +113,6 @@ class Player:
         self.running = SpriteSheet("https://docs.google.com/uc?id=1wPK7fHRx4zOP-AgjnRRNUiQvLD55ajms", 123, 126, 3, 3)
         self.jumping = SpriteSheet("https://docs.google.com/uc?id=1l8VgfNeWr4yVC1hgTF_dVnrZvN0xosRv", 123, 126, 3, 3)
 
-    def draw(self, canvas):  # draw the player
-        pass
-        #p1 = self.pos  # bottom left
-        #p2 = self.pos + Vector(0, -self.height)  # topleft
-        #p3 = self.pos + Vector(self.width, 0)  # bottom right
-        #p4 = self.pos + Vector(self.width, -self.height)  # top right
-        #canvas.draw_polygon([p1.get_p(), p2.get_p(), p4.get_p(), p3.get_p()], 5, 'Yellow', 'Yellow')
 
     def draw_score(self, canvas):
         global WIDTH
@@ -264,6 +257,10 @@ class FloorInteraction:
         self.inCollision = False
 
     def update(self):
+        global ss
+
+
+
 
         if self.on_platform_x():
             if self.player.pos.y >= self.other.pos.y - 1:
@@ -275,8 +272,10 @@ class FloorInteraction:
             if self.falling():
                 self.inCollision = False
                 print("game over")
-                global ss
                 ss.state = 0
+
+        elif self.on_platform_x() and self.below_platform():
+            ss.state = 0
 
         return self.inCollision
 
@@ -289,8 +288,11 @@ class FloorInteraction:
     def on_platform_x(self):
         return (self.player.pos.x + self.player.width >= self.other.pos.x) & (self.player.pos.x <= self.other.pos.x + self.other.length)
 
+    def below_platform(self):
+        return self.player.pos.y + self.player.height > self.other.pos.y
+
     def falling(self):
-        return self.player.pos.y - self.player.height - self.player.height > self.other.pos.y
+        return self.player.pos.y - self.player.height  > self.other.pos.y
 
     def collide_left_wall(self):
         return self.player.pos.x + self.player.width == self.other.pos.x
@@ -403,7 +405,7 @@ class SideScroller:
         canvas.draw_image(BG_IMG, (960, 540), (1920, 1080),
                            (WIDTH/2, HEIGHT/2), (WIDTH, HEIGHT))
 
-        self.p.player_running(canvas)
+
         if self.state == 0:
             self.w.draw(canvas)
 
@@ -420,8 +422,9 @@ class SideScroller:
             self.p.movePlayer(GRAVITY)
             self.p.increment_score(SPEED)
             self.p.draw_score(canvas)
+            self.p.player_running(canvas)
 
-            self.p.draw(canvas)
+
 
             while i < max_floor:
                 if (i == 0) & (self.floors[i].expire_check()):
@@ -433,7 +436,7 @@ class SideScroller:
 
                 if inter_floor.update():  # if its colliding
                     if kbd.space:
-                        self.p.movePlayer(-5)
+                        self.p.movePlayer(-3.5)
                         kbd.space = False
 
                 for o in self.floors[i].inter_obs:
